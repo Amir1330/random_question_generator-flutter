@@ -8,9 +8,8 @@ A modern quiz application that presents questions in a chat-like interface, wher
 
 - 🤖 Chat-like interface for an engaging quiz experience
 - 🎯 Score tracking system (User vs AI)
-- 🔄 Dynamic question generation using Hugging Face AI models
+- 📚 Local question bank with various categories
 - 🎨 Modern Material Design with dark/light theme support
-- 🔐 Secure API token management
 - 💾 Local progress saving
 
 ## Getting Started
@@ -19,7 +18,6 @@ A modern quiz application that presents questions in a chat-like interface, wher
 
 - Flutter SDK (2.0.0 or higher)
 - Dart SDK (2.12.0 or higher)
-- A Hugging Face API token (Get one [here](https://huggingface.co/settings/tokens))
 
 ### Installation
 
@@ -39,29 +37,31 @@ flutter pub get
 flutter run
 ```
 
-### Setting Up Your API Token
-
-1. Launch the app
-2. Tap the settings icon in the app bar
-3. Enter your Hugging Face API token
-4. Save the token
-
-Your token will be stored securely using Flutter Secure Storage.
-
 ## How to Play
 
-1. Start the app and set up your API token
+1. Start the app
 2. Tap the + button to get a new question
 3. Type your answer in the input field
 4. Submit your answer
 5. If correct, you get a point; if incorrect, the AI gets a point
 6. Keep playing to improve your score!
 
+## Question Categories
+
+The app includes questions from various categories:
+- General Knowledge
+- Science
+- History
+- Geography
+- Technology
+- Sports
+- Arts and Culture
+- Food and Drink
+
 ## Architecture
 
 - **Provider** for state management
-- **Flutter Secure Storage** for secure token storage
-- **HTTP** for API communication
+- **SharedPreferences** for local storage
 - **Material 3** for modern UI components
 
 ## Contributing
@@ -78,7 +78,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- [Hugging Face](https://huggingface.co/) for providing the AI models
 - [Flutter](https://flutter.dev/) for the amazing framework
 - [Material Design](https://material.io/) for the design guidelines
 

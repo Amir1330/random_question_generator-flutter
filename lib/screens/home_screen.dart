@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/question_provider.dart';
 import '../widgets/question_card.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,12 +14,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _answerController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<QuestionProvider>().loadQuestions();
+      _scrollToBottom();
     });
   }
 
@@ -26,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _answerController.dispose();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -39,12 +43,59 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _generateQuestion() async {
+    try {
+      await context.read<QuestionProvider>().generateQuestion();
+      _scrollToBottom();
+      // Focus the text field after generating a question
+      _focusNode.requestFocus();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            action: e.toString().contains('token') ? SnackBarAction(
+              label: 'Set Up Token',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              ),
+            ) : null,
+          ),
+        );
+      }
+    }
+  }
+
+  void _submitAnswer() {
+    if (_answerController.text.isNotEmpty) {
+      final provider = context.read<QuestionProvider>();
+      if (provider.questions.isNotEmpty) {
+        final currentQuestion = provider.questions.first;
+        if (!currentQuestion.isAnswered) {
+          provider.submitAnswer(currentQuestion, _answerController.text);
+          _answerController.clear();
+          _scrollToBottom();
+          // Keep the keyboard open
+          _focusNode.requestFocus();
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quiz Chat'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => context.read<QuestionProvider>().clearHistory(),
@@ -90,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: _scrollController,
                   padding: const EdgeInsets.all(16),
                   itemCount: provider.questions.length,
+                  reverse: true, // Show newest messages at the bottom
                   itemBuilder: (context, index) {
                     final question = provider.questions[index];
                     return Padding(
@@ -104,12 +156,16 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildAnswerInput(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.read<QuestionProvider>().generateQuestion();
-          _scrollToBottom();
+      floatingActionButton: Consumer<QuestionProvider>(
+        builder: (context, provider, child) {
+          final hasUnansweredQuestion = provider.questions.isNotEmpty && 
+              !provider.questions.first.isAnswered;
+          
+          return FloatingActionButton(
+            onPressed: hasUnansweredQuestion ? _submitAnswer : _generateQuestion,
+            child: Icon(hasUnansweredQuestion ? Icons.send : Icons.add),
+          );
         },
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -163,61 +219,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAnswerInput() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _answerController,
-              decoration: const InputDecoration(
-                hintText: 'Type your answer...',
-                border: OutlineInputBorder(),
+    return Consumer<QuestionProvider>(
+      builder: (context, provider, child) {
+        final hasUnansweredQuestion = provider.questions.isNotEmpty && 
+            !provider.questions.first.isAnswered;
+        
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, -2),
               ),
-              onSubmitted: (value) {
-                if (value.isNotEmpty) {
-                  final provider = context.read<QuestionProvider>();
-                  if (provider.questions.isNotEmpty) {
-                    final currentQuestion = provider.questions.first;
-                    if (!currentQuestion.isAnswered) {
-                      provider.submitAnswer(currentQuestion, value);
-                      _answerController.clear();
-                      _scrollToBottom();
-                    }
-                  }
-                }
-              },
-            ),
+            ],
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: () {
-              if (_answerController.text.isNotEmpty) {
-                final provider = context.read<QuestionProvider>();
-                if (provider.questions.isNotEmpty) {
-                  final currentQuestion = provider.questions.first;
-                  if (!currentQuestion.isAnswered) {
-                    provider.submitAnswer(currentQuestion, _answerController.text);
-                    _answerController.clear();
-                    _scrollToBottom();
-                  }
-                }
-              }
-            },
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _answerController,
+                  focusNode: _focusNode,
+                  decoration: const InputDecoration(
+                    hintText: 'Type your answer...',
+                    border: OutlineInputBorder(),
+                  ),
+                  onSubmitted: (_) => _submitAnswer(),
+                  enabled: hasUnansweredQuestion,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 } 

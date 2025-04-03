@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -9,58 +9,50 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _tokenController = TextEditingController();
-  final _storage = const FlutterSecureStorage();
-  bool _isLoading = false;
+  final TextEditingController _nameController = TextEditingController();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadToken();
+    _loadSettings();
   }
 
   @override
   void dispose() {
-    _tokenController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadToken() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadSettings() async {
     try {
-      final token = await _storage.read(key: 'hf_token');
-      if (token != null) {
-        _tokenController.text = token;
-      }
-    } finally {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _nameController.text = prefs.getString('user_name') ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error loading settings: $e');
       setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _saveToken() async {
-    if (_tokenController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a token')),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
+  Future<void> _saveSettings() async {
     try {
-      await _storage.write(key: 'hf_token', value: _tokenController.text);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_name', _nameController.text);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Token saved successfully')),
+          const SnackBar(content: Text('Settings saved successfully')),
         );
       }
     } catch (e) {
+      debugPrint('Error saving settings: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving token: $e')),
+          const SnackBar(content: Text('Error saving settings')),
         );
       }
-    } finally {
-      setState(() => _isLoading = false);
     }
   }
 
@@ -78,27 +70,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Hugging Face API Token',
+                    'Profile Settings',
                     style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Enter your Hugging Face API token to generate questions. You can get one from https://huggingface.co/settings/tokens',
-                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
                   TextField(
-                    controller: _tokenController,
+                    controller: _nameController,
                     decoration: const InputDecoration(
-                      labelText: 'API Token',
+                      labelText: 'Your Name',
                       border: OutlineInputBorder(),
                     ),
-                    obscureText: true,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _saveToken,
-                    child: const Text('Save Token'),
+                    onPressed: _saveSettings,
+                    child: const Text('Save Settings'),
                   ),
                 ],
               ),
