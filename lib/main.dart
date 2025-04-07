@@ -143,14 +143,20 @@ class HomeScreen extends StatelessWidget {
               final width = constraints.maxWidth;
               final height = constraints.maxHeight;
               
-              // Determine if we're on a small screen
+              // Determine screen size categories
               final isSmallScreen = width < 600;
+              final isMediumScreen = width >= 600 && width < 900;
+              final isLargeScreen = width >= 900;
+              
+              // Calculate padding based on screen size
+              final double horizontalPadding = isSmallScreen ? 8.0 : (isMediumScreen ? 16.0 : 24.0);
+              final double verticalPadding = isSmallScreen ? 8.0 : (isMediumScreen ? 16.0 : 24.0);
               
               return Column(
                 children: [
                   // Score section
                   Container(
-                    padding: EdgeInsets.all(isSmallScreen ? 8 : 16),
+                    padding: EdgeInsets.all(verticalPadding),
                     color: Theme.of(context).colorScheme.primaryContainer,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -159,11 +165,15 @@ class HomeScreen extends StatelessWidget {
                           title: 'You',
                           score: context.watch<QuestionProvider>().userScore,
                           color: Colors.green,
+                          isSmallScreen: isSmallScreen,
+                          isLargeScreen: isLargeScreen,
                         ),
                         ScoreCard(
                           title: 'AI KILLA MACHINE',
                           score: context.watch<QuestionProvider>().aiScore,
                           color: Colors.red,
+                          isSmallScreen: isSmallScreen,
+                          isLargeScreen: isLargeScreen,
                         ),
                       ],
                     ),
@@ -180,14 +190,14 @@ class HomeScreen extends StatelessWidget {
                         }
 
                         // For landscape mode on larger screens, use a grid layout
-                        if (orientation == Orientation.landscape && width > 900) {
+                        if (orientation == Orientation.landscape && isLargeScreen) {
                           return GridView.builder(
-                            padding: const EdgeInsets.all(16),
+                            padding: EdgeInsets.all(horizontalPadding),
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: (width / 500).floor().clamp(2, 3),
                               childAspectRatio: 1.5,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
+                              crossAxisSpacing: horizontalPadding,
+                              mainAxisSpacing: verticalPadding,
                             ),
                             itemCount: provider.questions.length,
                             itemBuilder: (context, index) {
@@ -197,6 +207,8 @@ class HomeScreen extends StatelessWidget {
                                 userAnswer: provider.answers[index],
                                 isAnswered: provider.answeredQuestions[index],
                                 isCurrentQuestion: index == 0,
+                                isSmallScreen: isSmallScreen,
+                                isLargeScreen: isLargeScreen,
                               );
                             },
                           );
@@ -204,7 +216,10 @@ class HomeScreen extends StatelessWidget {
 
                         // For portrait mode or smaller screens, use a list layout
                         return ListView.builder(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: verticalPadding / 2,
+                          ),
                           itemCount: provider.questions.length,
                           itemBuilder: (context, index) {
                             final question = provider.questions[index];
@@ -213,6 +228,8 @@ class HomeScreen extends StatelessWidget {
                               userAnswer: provider.answers[index],
                               isAnswered: provider.answeredQuestions[index],
                               isCurrentQuestion: index == 0,
+                              isSmallScreen: isSmallScreen,
+                              isLargeScreen: isLargeScreen,
                             );
                           },
                         );
@@ -223,11 +240,18 @@ class HomeScreen extends StatelessWidget {
                   // Answer input section
                   if (!context.watch<QuestionProvider>().isAnswered)
                     Padding(
-                      padding: EdgeInsets.all(isSmallScreen ? 8 : 16),
+                      padding: EdgeInsets.all(horizontalPadding),
                       child: TextField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Type your answer...',
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: isSmallScreen ? 12 : 16,
+                            vertical: isSmallScreen ? 12 : 16,
+                          ),
+                        ),
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 14 : (isMediumScreen ? 16 : 18),
                         ),
                         onSubmitted: (value) => context.read<QuestionProvider>().submitAnswer(value),
                         autofocus: true,
