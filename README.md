@@ -14,7 +14,7 @@ A Flutter-based quiz game where you compete against the "AI KILLA MACHINE" by an
 
 ## Categories
 
-The quiz includes 133 questions across multiple categories:
+The quiz includes 100 + questions across multiple categories:
 
 - Science
 - History
