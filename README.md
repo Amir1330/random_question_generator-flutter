@@ -1,88 +1,100 @@
-# Flutter Quiz Chat
+# Quiz Battle
 
-A modern quiz application that presents questions in a chat-like interface, where users compete against AI in a question-answer format.
-
-![Flutter Quiz Chat](assets/app_screenshot.png)
+A Flutter-based quiz game where you compete against the "AI KILLA MACHINE" by answering questions correctly.
 
 ## Features
 
-- 🤖 Chat-like interface for an engaging quiz experience
-- 🎯 Score tracking system (User vs AI)
-- 📚 Local question bank with various categories
-- 🎨 Modern Material Design with dark/light theme support
-- 💾 Local progress saving
+- **Competitive Gameplay**: Battle against the AI by answering questions correctly
+- **Score Tracking**: Keep track of your score and the AI's score
+- **Question History**: View your previous questions and answers
+- **Responsive Design**: Adapts to different screen sizes and orientations
+- **No Repetition**: Questions don't repeat until all 133 questions have been used
+- **Immediate Feedback**: See if your answer was correct or incorrect
+- **Automatic Progression**: New questions appear automatically after answering
 
-## Getting Started
+## Categories
 
-### Prerequisites
+The quiz includes 133 questions across multiple categories:
 
-- Flutter SDK (2.0.0 or higher)
-- Dart SDK (2.12.0 or higher)
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/random_question_generator-flutter.git
-cd random_question_generator-flutter
-```
-
-2. Install dependencies:
-```bash
-flutter pub get
-```
-
-3. Run the app:
-```bash
-flutter run
-```
-
-## How to Play
-
-1. Start the app
-2. Tap the + button to get a new question
-3. Type your answer in the input field
-4. Submit your answer
-5. If correct, you get a point; if incorrect, the AI gets a point
-6. Keep playing to improve your score!
-
-## Question Categories
-
-The app includes questions from various categories:
-- General Knowledge
 - Science
 - History
 - Geography
 - Technology
 - Sports
-- Arts and Culture
-- Food and Drink
+- Entertainment
+- Literature
+- Music
+- Food & Drink
+- Animals
+- Art
+- General Knowledge
 
-## Architecture
+## How to Play
 
-- **Provider** for state management
-- **SharedPreferences** for local storage
-- **Material 3** for modern UI components
+1. Start the app and you'll see a question at the top
+2. Type your answer in the text field at the bottom
+3. Press Enter to submit your answer
+4. If correct, you get a point; if incorrect, the AI gets a point
+5. After 2 seconds, a new question will appear automatically
+6. Continue answering questions to increase your score
+7. Use the reset button to start a new game
 
-## Contributing
+## Technical Details
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- Built with Flutter
+- Uses Provider for state management
+- Responsive layout that works on phones, tablets, and desktops
+- Grid layout for landscape mode on larger screens
+- List layout for portrait mode or smaller screens
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK
+- Dart SDK
+- An IDE (VS Code, Android Studio, etc.)
+
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/quiz-battle.git
+   ```
+
+2. Navigate to the project directory:
+   ```
+   cd quiz-battle
+   ```
+
+3. Install dependencies:
+   ```
+   flutter pub get
+   ```
+
+4. Run the app:
+   ```
+   flutter run
+   ```
+
+## Project Structure
+
+- `lib/main.dart`: Main application file with UI and game logic
+- `lib/data/questions.dart`: Contains the question database
+- `lib/widgets/question_card.dart`: Widget for displaying questions
+- `lib/widgets/score_card.dart`: Widget for displaying scores
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
-- [Flutter](https://flutter.dev/) for the amazing framework
-- [Material Design](https://material.io/) for the design guidelines
+- Flutter team for the amazing framework
+- All the knowledge that went into creating the questions
 
 ## Contact
 
 Your Name - [@yourusername](https://twitter.com/yourusername)
 
-Project Link: [https://github.com/yourusername/random_question_generator-flutter](https://github.com/yourusername/random_question_generator-flutter) 
+Project Link: [https://github.com/yourusername/quiz-battle](https://github.com/yourusername/quiz-battle) 

@@ -1,5 +1,5 @@
 name: random_question_generator
-description: A Flutter app that generates random questions using a local question bank
+description: A Flutter app that generates random questions using Hugging Face API
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  http: ^1.1.0
   provider: ^6.0.5
   shared_preferences: ^2.2.0
   google_fonts: ^5.1.0
