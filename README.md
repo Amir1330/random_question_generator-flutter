@@ -95,15 +95,5 @@ The quiz includes 100 + questions across multiple categories:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GPL License - see the LICENSE file for details.
 
-## Acknowledgments
-
-- Flutter team for the amazing framework
-- All the knowledge that went into creating the questions
-
-## Contact
-
-Your Name - [@yourusername](https://twitter.com/yourusername)
-
-Project Link: [https://github.com/yourusername/quiz-battle](https://github.com/yourusername/quiz-battle) 
